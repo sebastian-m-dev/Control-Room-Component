@@ -1,0 +1,113 @@
+// ============================================================
+// Design Tokens - Control Room
+// Paleta Light/Dark, tipografía, elevación, bordes y motion
+// ============================================================
+
+// Breakpoints para los mixins de media queries
+$breakpoints: (
+  sm: 640px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+);
+
+// Altura del header para cálculos de layout
+$header-height: 4.5rem;
+
+:root {
+  // Tipografía
+  --font-sans: "Geist", sans-serif;
+
+  // Escala de espaciado
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  // Radios de borde
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-full: 9999px;
+
+  // Elevación / sombras
+  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.06), 0 1px 3px rgb(15 23 42 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(15 23 42 / 0.1), 0 2px 4px -2px rgb(15 23 42 / 0.1);
+  --shadow-lg: 0 12px 24px -6px rgb(15 23 42 / 0.14), 0 4px 8px -4px rgb(15 23 42 / 0.12);
+
+  // Motion
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-base: 240ms;
+  --duration-slow: 400ms;
+  --duration-theme: 1000ms;
+
+  // Header
+  --header-h: #{$header-height};
+
+  // Paleta LIGHT
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #eef1f7;
+  --color-gradient-opacity: linear-gradient(0deg, rgba(255, 255, 255, 0) 0%, #ffffff 100%);
+  --color-border: #e2e8f0;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #8a97ab;
+  --color-accent: hsl(185, 100%, 50%);
+  --color-accent-hover: #1d4ed8;
+  --color-accent-soft: #dbeafe;
+  --color-success: #00c585;
+  --color-success-soft: #e4fff6;
+  --color-warning: #004EFE;
+  --color-warning-soft: #fef3c7;
+  --color-danger: #dc2626;
+  --color-danger-soft: #fee2e2;
+  --color-offline: #64748b;
+  --color-offline-soft: #e2e8f0;
+  --color-map-bg: #f0f0f0;
+
+  // Skeleton shimmer
+  --skeleton-shine: rgb(15 23 42 / 0.06);
+
+  color-scheme: light;
+}
+
+.dark {
+  // Paleta DARK
+  --color-bg: #111824;
+  --color-surface: #101a2e;
+  --color-surface-elevated: #16233c;
+  --color-border: #233149;
+  --color-gradient-opacity: linear-gradient(0deg, rgba(15, 22, 33, 0) 0%, #111824 50%);
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #c3dbff;
+  --color-text-muted: #648a8b;
+  --color-accent: #18EFF1;
+  --color-accent-hover: #3b82f6;
+  --color-accent-soft: #1d3352;
+  --color-success: #00e89f;
+  --color-success-soft: #0e2b22;
+  --color-warning: #9dbaff;
+  --color-warning-soft: #3a2b0c;
+  --color-danger: #f87171;
+  --color-danger-soft: #3a1520;
+  --color-offline: #8b98ad;
+  --color-offline-soft: #223049;
+  --color-map-bg: #101418;
+  --color-text-data: #ffffff;
+
+  --skeleton-shine: rgb(255 255 255 / 0.08);
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.45), 0 1px 3px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.45), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 12px 24px -6px rgb(0 0 0 / 0.5), 0 4px 8px -4px rgb(0 0 0 / 0.45);
+
+  color-scheme: dark;
+}

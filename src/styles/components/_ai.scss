@@ -1,0 +1,146 @@
+// ============================================================
+// CAPA VISUAL AI - Glass-Skeuomorphism + Mesh Gradients + Pulse
+//
+// EDITA AQUÍ degradados, texturas, luces 3D y animaciones.
+// Todos los valores dependen de los tokens --glass-* y --mesh-*,
+// definidos por tema (Light / Dark) justo debajo.
+// ============================================================
+
+@use '../variables' as *;
+
+:root {
+  // ---------- Glass-Skeuomorphism (tokens Light) ----------
+  --glass-bg: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.16) 100%);
+  --glass-border: rgba(255, 255, 255, 0.9);
+  --glass-shadow-inset-top: inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+  --glass-shadow-inset-bottom: inset 0 -1px 1px 0 rgba(0, 0, 0, 0.05);
+  --glass-shadow-drop: 0 20px 40px -15px rgba(15, 23, 42, 0.35);
+
+  // ---------- Mesh Gradients (blobs de color) ----------
+  --mesh-c1: rgba(37, 99, 235, 0.16);
+  --mesh-c2: rgba(22, 163, 74, 0.13);
+  --mesh-c3: rgba(124, 58, 237, 0.13);
+}
+
+.dark {
+  // ---------- Glass-Skeuomorphism (tokens Dark) ----------
+  --glass-bg: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.015) 100%);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-shadow-inset-top: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22);
+  --glass-shadow-inset-bottom: inset 0 -1px 1px 0 rgba(0, 0, 0, 0.35);
+  --glass-shadow-drop: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+
+  // ---------- Mesh Gradients (blobs de color) ----------
+  --mesh-c1: rgba(96, 165, 250, 0.15);
+  --mesh-c2: rgba(52, 211, 153, 0.11);
+  --mesh-c3: rgba(167, 139, 250, 0.11);
+}
+
+// ============================================================
+// 1) Glass-Skeuomorphism: bordes biselados y fuentes de luz.
+//    Aplicar como clase extra (ej: <article class="status-card ai-card-3d">).
+// ============================================================
+.ai-card-3d {
+  background:
+    var(--glass-bg),
+    var(--color-surface);
+  border: 1px solid var(--glass-border);
+  // Bisel interno superior (reflejo 3D) + luz inferior + sombra de caída
+  box-shadow:
+    var(--glass-shadow-inset-top),
+    var(--glass-shadow-inset-bottom),
+    var(--glass-shadow-drop);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg);
+}
+
+// ============================================================
+// 2) Degradados Mágicos "AI Pulsing" (Mesh Gradients).
+//    Malla de blobs de color fija detrás del dashboard; animación
+//    sutil mientras hay movimiento de datos.
+// ============================================================
+.dashboard {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(42rem 42rem at 12% 8%, var(--mesh-c1), transparent 62%),
+      radial-gradient(38rem 38rem at 88% 18%, var(--mesh-c2), transparent 62%),
+      radial-gradient(32rem 32rem at 55% 88%, var(--mesh-c3), transparent 62%);
+    animation: mesh-float 18s ease-in-out infinite alternate;
+    transition: opacity var(--duration-slow) var(--ease-out);
+  }
+}
+
+@keyframes mesh-float {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    transform: translate3d(1.5%, -1.5%, 0) scale(1.07);
+  }
+}
+
+// Indicador "Live Pulse" con volumen 3D.
+// Se re-monta (key) con cada fix nuevo para reiniciar la animación,
+// proyectando que el motor asíncrono acaba de procesar los datos.
+.mesh-pulse {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 600;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+  background: var(--color-success);
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.5), // Brillo 3D
+    0 0 14px var(--color-success); // Glow exterior
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--color-success);
+    animation: mesh-ping 1.8s var(--ease-out) infinite;
+  }
+
+  &::after {
+    animation-delay: 0.6s;
+  }
+}
+
+@keyframes mesh-ping {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.8;
+  }
+
+  70%,
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+// ============================================================
+// 3) Punto de estado 3D (Live Pulse del StatusCard).
+// ============================================================
+.ai-status-dot {
+  background: currentColor;
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.55), // Brillo 3D
+    0 0 12px currentColor; // Glow exterior
+}

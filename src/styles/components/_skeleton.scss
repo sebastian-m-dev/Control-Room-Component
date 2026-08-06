@@ -1,0 +1,118 @@
+// ============================================================
+// Skeletons animados (CLS-free) para mapa y tarjetas
+// ============================================================
+
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-elevated);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--skeleton-shine), transparent);
+    transform: translateX(-100%);
+    animation: skeleton-shimmer 1.6s var(--ease-out) infinite;
+  }
+
+  &--select {
+    height: 2.75rem;
+    border-radius: var(--radius-lg);
+  }
+
+  &--title {
+    height: 1.25rem;
+    width: 55%;
+  }
+
+  &--badge {
+    height: 1.5rem;
+    width: 5.5rem;
+    border-radius: var(--radius-full);
+  }
+
+  &--row {
+    height: 1rem;
+    width: 100%;
+  }
+
+  &--text {
+    height: 0.8125rem;
+    width: 70%;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  min-height: 13rem;
+}
+
+.skeleton-map {
+  position: relative;
+  height: 100%;
+  min-height: 420px;
+  border-radius: var(--radius-lg);
+  background: var(--color-map-bg);
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--skeleton-shine), transparent);
+    transform: translateX(-100%);
+    animation: skeleton-shimmer 1.6s var(--ease-out) infinite;
+  }
+}
+
+.skeleton-map-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 400;
+  border-radius: var(--radius-lg);
+  background: var(--color-map-bg);
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--skeleton-shine), transparent);
+    transform: translateX(-100%);
+    animation: skeleton-shimmer 1.6s var(--ease-out) infinite;
+  }
+}
+
+.skeleton-dashboard {
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  grid-template-columns: 1fr;
+
+  @include respond('lg') {
+    grid-template-columns: minmax(320px, 380px) 1fr;
+  }
+
+  &__side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+}

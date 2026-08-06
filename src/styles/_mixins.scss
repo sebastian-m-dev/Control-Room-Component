@@ -1,0 +1,41 @@
+// ============================================================
+// Mixins utilitarios: media queries, foco accesible, sr-only
+// ============================================================
+
+@use 'sass:map';
+@use './variables' as *;
+
+// Media query móvil-first por breakpoint de $breakpoints
+@mixin respond($breakpoint) {
+  @media (min-width: map.get($breakpoints, $breakpoint)) {
+    @content;
+  }
+}
+
+// Anillo de foco visible para accesibilidad WCAG 2.1 AA.
+// Prohibido `outline: none` sin un reemplazo visual adecuado.
+@mixin focus-ring($offset: 2px) {
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: $offset;
+    border-radius: inherit;
+    box-shadow: 0 0 0 4px var(--color-accent-soft);
+  }
+}
+
+// Texto solo para lectores de pantalla
+@mixin sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

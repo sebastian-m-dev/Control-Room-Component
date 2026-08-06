@@ -1,0 +1,219 @@
+// ============================================================
+// Header, status chip, theme toggle, demo switch y selector
+// ============================================================
+
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  gap: var(--space-4);
+  padding: var(--space-2)var(--space-3);
+  background: var(--color-bg);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  transition: background-color var(--duration-base) var(--ease-out);
+
+  @include respond('sm') {
+    padding: var(--space-4) var(--space-6);
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    text-decoration: none;
+    color: inherit;
+    border-radius: var(--radius-md);
+
+    @include focus-ring;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-md);
+    background: var(--color-accent);
+    color: #fff;
+    transition: background-color var(--duration-base) var(--ease-out);
+  }
+
+  &__titles {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+
+  &__title {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--color-text-primary);
+  }
+
+  &__subtitle {
+    display: none;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+
+    @include respond('md') {
+      display: block;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+}
+
+// ---------- Theme toggle / Logout ----------
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  transition: color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  @include focus-ring;
+}
+
+// ---------- Demo mode switch (role="switch") ----------
+.demo-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-accent);
+  }
+
+  &__track {
+    position: relative;
+    width: 2rem;
+    height: 1.125rem;
+    border-radius: var(--radius-full);
+    background: var(--color-offline);
+    transition: background-color var(--duration-fast) var(--ease-out);
+    flex-shrink: 0;
+  }
+
+  &__thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: var(--radius-full);
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  &[aria-checked='true'] &__track {
+    background: var(--color-accent);
+  }
+
+  &[aria-checked='true'] &__thumb {
+    transform: translateX(0.875rem);
+  }
+
+  @include focus-ring;
+}
+
+// ---------- Campo de selección de vehículo ----------
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+
+  &.ai-card-3d {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  &__label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  &__error {
+    font-size: 0.8125rem;
+    color: var(--color-danger);
+  }
+}
+
+.select-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  >svg {
+    position: absolute;
+    right: 0.8125rem;
+    pointer-events: none;
+    color: var(--color-text-muted);
+  }
+}
+
+.select {
+  width: 100%;
+  appearance: none;
+  border-radius: var(--radius-lg);
+  padding: 0.625rem 2.5rem 0.625rem 0.875rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out);
+
+  &:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  &:disabled {
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+  }
+
+  option {
+    color: var(--color-text-primary);
+    background-color: var(--color-surface);
+  }
+
+  @include focus-ring;
+}

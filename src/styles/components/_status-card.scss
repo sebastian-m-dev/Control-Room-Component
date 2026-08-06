@@ -1,0 +1,184 @@
+// ============================================================
+// StatusCard + Live Pulse + micro-animaciones de valores
+// ============================================================
+
+@use '../variables' as *;
+@use '../mixins' as *;
+
+.status-card {
+  background: var(--color-gradient-opacity);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-2)var(--space-3);
+
+  &:focus-within {
+    box-shadow: var(--shadow-md);
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  &__identity {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--color-text-primary);
+  }
+
+  &__id {
+    margin-top: var(--space-1);
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__address {
+    margin: calc(-1 * var(--space-2)) 0 0;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4) var(--space-6);
+    margin: 0;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+
+    dt {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transform: translate3d(0, 0, 0);
+      -webkit-backface-visibility: hidden;
+      color: var(--color-text-muted);
+    }
+
+    dd {
+      display: inline-flex;
+      align-items: baseline;
+      gap: var(--space-1);
+      margin: 0;
+      font-size: 1.0625rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      transform: translate3d(0, 0, 0);
+      -webkit-backface-visibility: hidden;
+      color: var(--color-text-primary);
+    }
+  }
+
+  &__unit {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+  }
+}
+
+// ---------- Live Pulse (Online / Offline) ----------
+.pulse {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out);
+
+  &--online {
+    color: var(--color-success);
+    background: var(--color-success-soft);
+  }
+
+  &--offline {
+    color: var(--color-offline);
+    background: var(--color-offline-soft);
+  }
+
+  &__dot {
+    position: relative;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: var(--radius-full);
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  // Anillo de pulso dinámico solo cuando hay señal en vivo
+  &--online &__dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: var(--radius-full);
+    border: 2px solid currentColor;
+    opacity: 0;
+    animation: pulse-ring 2.2s var(--ease-out) infinite;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.35);
+    opacity: 0.7;
+  }
+
+  70% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+// ---------- Micro-interacción: cambio suave de texto (sin salto) ----------
+.soft-fade {
+  display: inline-block;
+  animation: soft-fade-in 250ms var(--ease-out);
+}
+
+@keyframes soft-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
