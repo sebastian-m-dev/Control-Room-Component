@@ -22,7 +22,7 @@ export function FleetSummary({ fleet, isLoading }: FleetSummaryProps) {
 
   return (
     <article className="status-card fleet-summary" aria-labelledby="fleet-summary-title">
-      <header className="status-card__header">
+      <header className="status-card__header" style={{ display: 'none' }}>
         <div className="status-card__identity">
           <h2 id="fleet-summary-title" className="status-card__title">
             Flota
@@ -53,10 +53,6 @@ export function FleetSummary({ fleet, isLoading }: FleetSummaryProps) {
           <dd>{isLoading ? '…' : Math.max(0, total - online)}</dd>
         </div>
       </dl>
-
-      <p className="status-card__hint">
-        Elige un vehículo en el selector para ver sus datos en detalle.
-      </p>
     </article>
   );
 }

@@ -14,7 +14,7 @@ export function DeviceSelectorCta({ devices, isLoading, hasError }: DeviceSelect
   const setSelectedDeviceId = useAppStore((s) => s.setSelectedDeviceId);
 
   return (
-    <div className="field ai-card-3d">
+    <div className="field ai-card-3d" aria-label="Seleccionar vehículo" title="Seleccionar vehículo">
       <label className="field__label" htmlFor="device-select">
         Vehículo
       </label>
@@ -30,6 +30,7 @@ export function DeviceSelectorCta({ devices, isLoading, hasError }: DeviceSelect
           <select
             id="device-select"
             className="select"
+            aria-label="Seleccionar vehículo" title="Seleccionar vehículo"
             value={selectedDeviceId ?? ''}
             disabled={devices.length === 0}
             onChange={(e) =>

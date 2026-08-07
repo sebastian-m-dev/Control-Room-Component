@@ -17,6 +17,8 @@ import type { TraccarDevice, TraccarPosition } from '@/types/traccar';
 
 const DEFAULT_CENTER: [number, number] = [40.4168, -3.7038]; // Madrid
 const DEFAULT_ZOOM = 19;
+// Offset de +100 px en el eje Y de la vista centrada que sigue al vehículo.
+const CAMERA_FOCUS_OFFSET_Y = 100;
 // JSON para el tema Oscuro (Dark Mode)
 const ESTILO_MAPA_DARK: google.maps.MapTypeStyle[] = [
   { elementType: 'geometry', stylers: [{ color: '#1e1e24' }] },
@@ -46,7 +48,7 @@ const ESTILO_MAPA_DARK: google.maps.MapTypeStyle[] = [
 // JSON para el tema Claro (Light Mode)
 const ESTILO_MAPA_LIGHT: google.maps.MapTypeStyle[] = [
   { elementType: 'geometry', stylers: [{ color: '#f5f5f7' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#4d5566' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#afafafff' }] },
   { featureType: 'administrative.country', elementType: 'labels.text.fill', stylers: [{ color: '#6b7280' }] },
   { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#f5f5f7' }] },
   { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#9ca3af' }] },
@@ -57,12 +59,14 @@ const ESTILO_MAPA_LIGHT: google.maps.MapTypeStyle[] = [
   { featureType: 'poi', elementType: 'labels.icon', stylers: [{ color: '#384042ff' }, { saturation: -90 }, { lightness: -20 }] },
   // ---------------------------
 
+  // ELIMINA EL REBORDE DE LAS CALLES AQUÍ:
+  { featureType: 'road', elementType: 'labels.text.stroke', stylers: [{ visibility: 'off' }] },
 
   { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
-  { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#374151' }] },
+  { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#bbbbbbff' }] },
   { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#e5e7eb' }] },
   { featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#eef0f3' }] },
-  { featureType: 'transit', elementType: 'labels.text.fill', stylers: [{ color: '#6b7280' }] },
+  { featureType: 'transit', elementType: 'labels.text.fill', stylers: [{ color: '#a9a9a9ff' }] },
   { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#cce1ff' }] },
   { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#4b6d9c' }] },
 ];
@@ -95,6 +99,30 @@ interface HoverInfo {
   x: number;
   y: number;
   name: string;
+}
+
+// Devuelve el centro del mapa desplazado +100 px en Y (pantalla) respecto al
+// foco (vehículo), de modo que la vista centrada queda compensada ese offset.
+function getFollowCenter(
+  map: google.maps.Map,
+  lat: number,
+  lng: number,
+): google.maps.LatLng {
+  const proj = map.getProjection();
+  const zoom = map.getZoom();
+  if (!proj || zoom == null) {
+    return new google.maps.LatLng(lat, lng);
+  }
+  const point = proj.fromLatLngToPoint(new google.maps.LatLng(lat, lng));
+  if (!point) {
+    return new google.maps.LatLng(lat, lng);
+  }
+  const offsetWorld = CAMERA_FOCUS_OFFSET_Y / Math.pow(2, zoom);
+  const next = proj.fromPointToLatLng(
+    new google.maps.Point(point.x, point.y + offsetWorld),
+    true,
+  );
+  return next ?? new google.maps.LatLng(lat, lng);
 }
 
 export function MapView({
@@ -191,9 +219,7 @@ export function MapView({
           center,
           zoom,
           isFractionalZoomEnabled: true,
-          mapTypeControlOptions: {
-            mapTypeIds: ['roadmap', 'terrain'],
-          },
+          disableDefaultUI: true,
           streetViewControl: false,
           // Se aplica el estilo del tema actual; se actualiza en vivo vía
           // map.setOptions() cuando el usuario cambia de tema (efecto abajo).
@@ -340,7 +366,7 @@ export function MapView({
             const [lng, lat] = frame.point;
             try {
               map.moveCamera({
-                center: { lat, lng },
+                center: getFollowCenter(map, lat, lng),
               });
             } catch (err) {
               console.warn('Google Maps: moveCamera falló.', err);

@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useTraccarLogin } from '@/hooks/useTraccarLogin';
-
+import Image from 'next/image';
+import logo from '@/public/icons/control-room.png';
 interface LoginViewProps {
   onEnableDemo?: () => void;
 }
@@ -33,24 +34,12 @@ export function LoginView({ onEnableDemo }: LoginViewProps) {
   return (
     <div className="login-card" aria-labelledby="login-title">
       <div className="login-card__icon" aria-hidden="true">
-        <svg
-          width="26"
-          height="26"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <rect x="3" y="11" width="18" height="11" rx="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-        </svg>
+        <Image src="/icons/control-room.png" alt="Control Room" width={500} height={300} />
       </div>
 
-      <h2 id="login-title" className="login-card__title">
-        Conectarse a Traccar
-      </h2>
+      <h1 id="login-title" className="login-card__title">
+        Conectate a Control Room
+      </h1>
       <p className="login-card__copy">
         Introduce las credenciales de tu servidor Traccar (por ejemplo, una cuenta registrada en{' '}
         <code>demo4.traccar.org</code>, que es gratuita). Si aún no tienes servidor, puedes probar

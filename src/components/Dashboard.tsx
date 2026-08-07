@@ -71,7 +71,7 @@ export function Dashboard() {
   // Sin sesión válida o sesión cerrada: mostrar la vista de login
   if ((!mockMode && session.isError) || loggedOut) {
     return (
-      <div className="dashboard-state">
+      <div className="dashboard-state login-screen">
         <LoginView onEnableDemo={enableDemo} />
       </div>
     );
@@ -80,7 +80,7 @@ export function Dashboard() {
   // Sesión expirada durante el uso: volver a login
   if (!mockMode && devices.isError && isUnauthorizedError(devices.error)) {
     return (
-      <div className="dashboard-state">
+      <div className="dashboard-state login-screen">
         <LoginView onEnableDemo={enableDemo} />
       </div>
     );
@@ -145,9 +145,13 @@ export function Dashboard() {
           />
         )}
       </div>
+      <Header />
+      <DeviceSelector
+        devices={deviceList}
+        isLoading={devices.isPending}
+        hasError={devices.isError}
+      />
       <aside className="dashboard__controls">
-        <Header />
-
         {mockMode && <DemoNotice />}
 
         {showAllVehicles ? (
@@ -181,11 +185,7 @@ export function Dashboard() {
           </>
         )}
       </aside>
-      <DeviceSelector
-        devices={deviceList}
-        isLoading={devices.isPending}
-        hasError={devices.isError}
-      />
+
     </div>
   );
 }

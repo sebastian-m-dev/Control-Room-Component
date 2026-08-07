@@ -95,6 +95,7 @@
 // Se re-monta (key) con cada fix nuevo para reiniciar la animación,
 // proyectando que el motor asíncrono acaba de procesar los datos.
 .mesh-pulse {
+  display: none;
   position: absolute;
   top: var(--space-4);
   right: var(--space-4);

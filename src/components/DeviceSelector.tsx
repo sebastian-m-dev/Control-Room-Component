@@ -28,7 +28,7 @@ export function DeviceSelector({ devices, isLoading, hasError }: DeviceSelectorP
   };
 
   return (
-    <div className="field ai-card-3d hidden device-selector-cta">
+    <div className="field ai-card-3d hidden device-selector-cta" aria-label="Seleccionar vehículo" title="Seleccionar vehículo">
       <label className="field__label" htmlFor="device-select">
         Vehículo
       </label>
@@ -47,6 +47,7 @@ export function DeviceSelector({ devices, isLoading, hasError }: DeviceSelectorP
             value={selectValue}
             disabled={devices.length === 0}
             onChange={(e) => handleChange(e.target.value)}
+            aria-label="Seleccionar vehículo" title="Seleccionar vehículo"
           >
             {devices.length === 0 ? (
               <option value="" disabled>

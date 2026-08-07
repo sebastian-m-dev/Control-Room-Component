@@ -45,79 +45,60 @@ export function StatusCard({ device, position, positionLoading }: StatusCardProp
 
   return (
     <article className="status-card" aria-labelledby="status-card-title">
-      <header className="status-card__header">
-        <div className="status-card__identity">
-          <VehicleIcon device={device} size={56} />
-          <div>
-            <h2 id="status-card-title" className="status-card__title">
-              {device.name}
-            </h2>
-            <p className="status-card__id">ID {device.uniqueId}</p>
+      <div className="container-info-card">
+        <header className="status-card__header">
+          <div className="grid grid-cols-10 gap-4">
+            <div className="col-span-4">
+              <VehicleIcon device={device} />
+            </div>
+            <div className="col-span-6">
+              <h2 id="status-card-title" className="status-card__title">
+                {device.name}
+              </h2>
+              <p className="status-card__id">ID {device.uniqueId}</p>
+              <span className={`pulse pulse--${online ? 'online' : 'offline'}`} role="status">
+                <span className="pulse__dot ai-status-dot" aria-hidden="true" />
+                {online ? 'En línea' : 'Sin conexión'}
+              </span>
+              <div className="status-card__item">
+                <dt>Última Actualización</dt>
+                <dd>{positionLoading ? '…' : <SoftFade text={formatRelativeTime(fixTime, now)} />}, {positionLoading ? '…' : <SoftFade text={formatClockTime(fixTime)} />}</dd>
+              </div>
+            </div>
+          </div>
+
+        </header>
+
+
+
+        <div className="status-card__data grid grid-cols-3 gap-4">
+          <div className="status-card__item">
+            <dt>Velocidad</dt>
+            <dd>
+              <Odometer value={speed} />
+              <span className="status-card__unit">km/h</span>
+            </dd>
+          </div>
+          <div className="status-card__item">
+            <dt>Rumbo</dt>
+            <dd>
+              <Odometer value={course == null ? null : Math.round(course)} />
+              <span>
+                ° · {course == null ? '—' : courseToCardinal(course)}
+              </span>
+            </dd>
+          </div>
+          <div className="status-card__item">
+            <dt>Batería</dt>
+            <dd>
+              <Odometer value={battery} />
+              {battery == null ? null : <span className="status-card__unit">%</span>}
+            </dd>
           </div>
         </div>
-        <span className={`pulse pulse--${online ? 'online' : 'offline'}`} role="status">
-          <span className="pulse__dot ai-status-dot" aria-hidden="true" />
-          {online ? 'En línea' : 'Sin conexión'}
-        </span>
-      </header>
+      </div>
 
-      {address && (
-        <p className="status-card__address">
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
-          {address}
-        </p>
-      )}
 
-      <dl className="status-card__grid">
-        <div className="status-card__item">
-          <dt>Velocidad</dt>
-          <dd>
-            <Odometer value={speed} />
-            <span className="status-card__unit">km/h</span>
-          </dd>
-        </div>
-
-        <div className="status-card__item">
-          <dt>Rumbo</dt>
-          <dd>
-            <Odometer value={course == null ? null : Math.round(course)} />
-            <span>
-              ° · {course == null ? '—' : courseToCardinal(course)}
-            </span>
-          </dd>
-        </div>
-
-        <div className="status-card__item">
-          <dt>Actualización</dt>
-          <dd>{positionLoading ? '…' : <SoftFade text={formatRelativeTime(fixTime, now)} />}</dd>
-        </div>
-
-        <div className="status-card__item">
-          <dt>Último fix</dt>
-          <dd>{positionLoading ? '…' : <SoftFade text={formatClockTime(fixTime)} />}</dd>
-        </div>
-
-        <div className="status-card__item">
-          <dt>Batería</dt>
-          <dd>
-            <Odometer value={battery} />
-            {battery == null ? null : <span className="status-card__unit">%</span>}
-          </dd>
-        </div>
-      </dl>
 
       <p className="sr-only" role="status" aria-live="polite">
         {announcement}

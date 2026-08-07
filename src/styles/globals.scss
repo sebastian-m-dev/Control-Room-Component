@@ -134,12 +134,12 @@
 }
 
 .dashboard__controls {
+  bottom: 0;
   position: fixed !important;
   display: flex;
   flex-direction: column;
   gap: var(--space-0);
   min-width: 0;
-  top: 0;
   left: 0;
   height: auto;
   width: 100vw;
@@ -150,7 +150,7 @@
   display: grid;
   place-items: center;
   padding: var(--space-8);
-  min-height: 60vh;
+  min-height: 100vh;
 }
 
 .device-selector-cta {
@@ -159,12 +159,17 @@
   flex-direction: column;
   gap: var(--space-6);
   min-width: 0;
-  bottom: 32px;
   padding: 32px;
-  left: 16px;
+  left: 100px;
+  top: 30px;
   height: auto;
-  width: calc(100% - 32px);
+  width: calc(100% - 200px);
   z-index: 100 !important;
+
+  @media screen and (min-width: 1024px) {
+    left: calc(50% - 300px);
+    width: 600px;
+  }
 }
 
 // ============================================================
@@ -204,8 +209,9 @@
 
   >.select-wrap {
     display: block !important;
-    padding: 0.7rem;
-    position: absolute;
+    padding: 0;
+    position: relative;
+    text-align: center;
     width: 100%;
   }
 

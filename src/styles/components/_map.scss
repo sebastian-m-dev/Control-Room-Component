@@ -35,6 +35,7 @@
   z-index: 500;
   display: flex;
   gap: var(--space-2);
+  visibility: hidden;
 }
 
 .map-toggle {
@@ -73,23 +74,77 @@
 }
 
 // ---------- Botón flotante "centrar en vehículo" ----------
+// Mismo efecto glassmorph + reborde animado que `.field.device-selector-cta`.
 .map-fab {
   position: absolute;
   right: var(--space-4);
-  bottom: var(--space-4);
+  bottom: calc(50% - 1.25rem);
   z-index: 500;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: var(--radius-full);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: radial-gradient(66.92% 66.92% at 50.23% 50.77%,
+      rgba(211, 211, 211, 0) 0% 40.67%,
+      rgba(211, 211, 211, 0.14) 75.17%,
+      rgba(211, 211, 211, 0.31) 100%);
+  border: none;
   color: var(--color-text-primary);
-  box-shadow: var(--shadow-md);
-  transition: transform var(--duration-fast) var(--ease-out),
-    background-color var(--duration-base) var(--ease-out);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: var(--glass-shadow-drop);
+  transition: transform var(--duration-fast) var(--ease-out);
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  // Glow degradado bajo el contenido.
+  &::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 70%;
+    height: 45%;
+    transform: translate(-50%, -50%);
+    border-radius: 22px;
+    background: linear-gradient(90deg,
+        rgba(24, 239, 241, 1) 0%,
+        rgba(17, 24, 36, 1) 100%);
+    filter: blur(20px);
+    will-change: filter;
+    pointer-events: none;
+  }
+
+  // Reborde animado tipo "GENERATE": conic gradient + mask.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    box-sizing: content-box;
+    border-radius: inherit;
+    padding: 2px;
+    background: conic-gradient(from var(--cta-angle),
+        rgba(255, 255, 255, 0.05) 0% 30%,
+        rgba(255, 255, 255, 0.3) 40%,
+        rgba(255, 255, 255, 0.05) 50% 75%,
+        rgba(255, 255, 255, 0.3) 85%,
+        rgba(255, 255, 255, 0.05) 95%);
+    background-clip: padding-box;
+    mask-image: linear-gradient(red, red), linear-gradient(red, red);
+    mask-clip: padding-box, content-box;
+    mask-composite: exclude;
+    -webkit-mask-image: linear-gradient(red, red), linear-gradient(red, red);
+    -webkit-mask-clip: padding-box, content-box;
+    -webkit-mask-composite: exclude;
+    animation: cta-border-spin 4s linear infinite;
+    pointer-events: none;
+  }
 
   &:hover:not(:disabled) {
     transform: scale(1.08);

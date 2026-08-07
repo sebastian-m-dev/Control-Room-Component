@@ -15,28 +15,23 @@ import Image from 'next/image';
 
 interface VehicleIconProps {
   device: TraccarDevice;
-  size?: number;
+  /** Ancho de salida en px; la altura escala de forma relativa. */
+  width?: number;
 }
 
-export function VehicleIcon({ device, size = 80 }: VehicleIconProps) {
+export function VehicleIcon({ device, width = 100 }: VehicleIconProps) {
   const kindOverride = useAppStore((s) => s.vehicleKinds[device.id]);
   const kind = resolveVehicleKind(device, kindOverride);
   const online = device.status === 'online';
 
   return (
-    <span
-      className={`vehicle-icon vehicle-icon--${kind}${online ? '' : ' vehicle-icon--offline'}`}
-      role="img"
-      aria-label={`Icono del vehículo ${device.name} (${kind})`}
-      style={{ width: size, height: size }}
-    >
-      <Image
-        src={getVehicleThumbUrl(device)}
-        alt=""
-        width={size}
-        height={size}
-        style={{ objectFit: 'contain' }}
-      />
-    </span>
+    <Image
+      src={getVehicleThumbUrl(device)}
+      className='thumb-img-vehicle'
+      alt=""
+      width={100}
+      height={100}
+      style={{ objectFit: 'contain', width: `${width}%`, height: 'auto' }}
+    />
   );
 }
