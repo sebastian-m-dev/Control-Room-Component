@@ -28,8 +28,13 @@ export function DeviceSelector({ devices, isLoading, hasError }: DeviceSelectorP
   };
 
   return (
-    <div className="field ai-card-3d hidden device-selector-cta" aria-label="Seleccionar vehículo" title="Seleccionar vehículo">
-      <label className="field__label" htmlFor="device-select">
+    <div
+      className="field ai-card-3d hidden device-selector-cta"
+      role="group"
+      aria-labelledby="device-select-label"
+      title="Seleccionar vehículo"
+    >
+      <label className="field__label" id="device-select-label" htmlFor="device-select">
         Vehículo
       </label>
 

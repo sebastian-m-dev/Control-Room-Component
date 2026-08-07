@@ -131,6 +131,12 @@
     animation: alert-lightbox-fade-out var(--duration-base) var(--ease-out) forwards;
   }
 
+  // El contenedor recibe el foco programático al abrir (role="dialog");
+  // el anillo visible lo dan los elementos interactivos internos.
+  &:focus {
+    outline: none;
+  }
+
   .alert {
     width: min(90vw, 30rem);
     max-height: 70vh;

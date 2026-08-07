@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 
 const FADE_MS = 240;
 
@@ -12,9 +12,21 @@ interface AlertLightboxProps {
   onClose?: () => void;
 }
 
-/** Lightbox glass + modal alert alert--info (estilo unificado de avisos de sistema). */
+/**
+ * Lightbox glass modal (estilo unificado de avisos de sistema).
+ *
+ * Accesibilidad WCAG 2.1 AA:
+ * - Semántica de diálogo: role="dialog" + aria-modal + aria-labelledby.
+ * - El foco se mueve al interior al abrir y se restaura al cerrar.
+ * - Trampa de foco con Tab (no permite salir del diálogo por teclado).
+ * - Cierre con Escape, botón de cerrar o click en el fondo.
+ */
 export function AlertLightbox({ title, body, actions, onClose }: AlertLightboxProps) {
   const [closing, setClosing] = useState(false);
+  const titleId = useId();
+  const bodyId = useId();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const handleClose = () => {
     if (!onClose) return;
@@ -23,16 +35,58 @@ export function AlertLightbox({ title, body, actions, onClose }: AlertLightboxPr
   };
 
   useEffect(() => {
-    if (!onClose) return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    // Si un hijo ya movió el foco dentro (p. ej. ErrorState enfoca
+    // "Reintentar"), no lo robamos; si no, movemos el foco al diálogo.
+    if (!dialog.contains(document.activeElement)) {
+      previousFocusRef.current = document.activeElement as HTMLElement | null;
+      dialog.focus({ preventScroll: true });
+    }
+
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') handleClose();
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        handleClose();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+
+      const focusables = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => el.offsetParent !== null || el === document.activeElement);
+      if (focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || document.activeElement === dialog)) {
+        event.preventDefault();
+        first.focus();
+      }
     };
+
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [onClose]);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      previousFocusRef.current?.focus?.();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      aria-describedby={body ? bodyId : undefined}
+      tabIndex={-1}
       className={`alert-lightbox${closing ? ' alert-lightbox--closing' : ''}`}
       onClick={onClose ? handleClose : undefined}
     >
@@ -52,8 +106,14 @@ export function AlertLightbox({ title, body, actions, onClose }: AlertLightboxPr
           <path d="M12 16v-4M12 8h.01" />
         </svg>
         <div className="alert__content">
-          <p className="alert__title">{title}</p>
-          {body && <div className="alert__body">{body}</div>}
+          <p className="alert__title" id={titleId}>
+            {title}
+          </p>
+          {body && (
+            <div className="alert__body" id={bodyId}>
+              {body}
+            </div>
+          )}
           {actions && <div className="alert__actions">{actions}</div>}
         </div>
         {onClose && (

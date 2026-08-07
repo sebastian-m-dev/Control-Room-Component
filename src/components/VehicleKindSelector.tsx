@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import Image from 'next/image';
 import { useAppStore } from '@/store/useAppStore';
 import { VEHICLE_KINDS } from '@/lib/vehicle';
@@ -28,6 +29,40 @@ interface VehicleKindSelectorProps {
 export function VehicleKindSelector({ deviceId, deviceName }: VehicleKindSelectorProps) {
   const selected = useAppStore((s) => s.vehicleKinds[deviceId]);
   const setVehicleKind = useAppStore((s) => s.setVehicleKind);
+  const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Navegación por teclado del radiogroup (APG): flechas mueven el foco y
+  // la selección; Home/End van al primer/último tipo.
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, kind: VehicleKind) => {
+    const index = VEHICLE_KINDS.indexOf(kind);
+    if (index === -1) return;
+
+    const select = (next: VehicleKind) => {
+      setVehicleKind(deviceId, next);
+      buttonsRef.current[VEHICLE_KINDS.indexOf(next)]?.focus();
+    };
+
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        event.preventDefault();
+        select(VEHICLE_KINDS[(index + 1) % VEHICLE_KINDS.length]);
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        event.preventDefault();
+        select(VEHICLE_KINDS[(index - 1 + VEHICLE_KINDS.length) % VEHICLE_KINDS.length]);
+        break;
+      case 'Home':
+        event.preventDefault();
+        select(VEHICLE_KINDS[0]);
+        break;
+      case 'End':
+        event.preventDefault();
+        select(VEHICLE_KINDS[VEHICLE_KINDS.length - 1]);
+        break;
+    }
+  };
 
   return (
     <div className="field ai-card-3d hidden vehicle-kind-selector">
@@ -41,12 +76,16 @@ export function VehicleKindSelector({ deviceId, deviceName }: VehicleKindSelecto
           return (
             <button
               key={kind}
+              ref={(el) => {
+                buttonsRef.current[VEHICLE_KINDS.indexOf(kind)] = el;
+              }}
               type="button"
               role="radio"
               aria-checked={active}
               className={`vehicle-kind-selector__option${active ? ' is-active' : ''}`}
               title={`Mostrar ${deviceName} como ${KIND_LABELS[kind]}`}
               onClick={() => setVehicleKind(deviceId, kind)}
+              onKeyDown={(e) => handleKeyDown(e, kind)}
             >
               <Image
                 src={`/icons/icon-${kind}-thumb.png`}
