@@ -50,7 +50,11 @@ interface RouteState {
 /** Cache de rutas por vehículo (una sola petición a Directions por sesión). */
 const routeCache = new Map<number, Promise<RouteState | null>>();
 
-const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
+// En el cliente se usa la key pública solo para detectar si hay que pedir la
+// ruta al proxy (la petición real la hace el servidor con GOOGLE_DIRECTIONS_API_KEY).
+// En el servidor se usa la key server-side de Directions (sin referrer).
+const GOOGLE_API_KEY =
+  process.env.GOOGLE_DIRECTIONS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
 function getState(vehicle: MockVehicle): SimState {
   let s = state.get(vehicle.id);

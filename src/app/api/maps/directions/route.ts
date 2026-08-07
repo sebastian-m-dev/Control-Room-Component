@@ -10,10 +10,14 @@ export const dynamic = 'force-dynamic';
  * fetch directo desde el navegador sería bloqueado.
  */
 export async function GET(request: NextRequest) {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
+  // La Directions API es un web service que se llama desde el servidor, así
+  // que usa una key server-side propia (sin restricción por referrer). Si no
+  // existe, cae a la key pública del mapa (solo para compatibilidad local).
+  const apiKey =
+    process.env.GOOGLE_DIRECTIONS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'MISSING_KEY', message: 'Falta NEXT_PUBLIC_GOOGLE_MAPS_API_KEY.' },
+      { error: 'MISSING_KEY', message: 'Falta GOOGLE_DIRECTIONS_API_KEY o NEXT_PUBLIC_GOOGLE_MAPS_API_KEY.' },
       { status: 400 },
     );
   }

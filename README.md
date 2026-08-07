@@ -74,10 +74,12 @@ Copia `.env.example` a `.env.local`. **No subas `.env.local` al repositorio** (e
 | `TRACCAR_EMAIL`                 | Servidor | No*         | Usuario Traccar para login automático                              |
 | `TRACCAR_PASSWORD`              | Servidor | No*         | Contraseña Traccar para login automático                           |
 | `NEXT_PUBLIC_TRACCAR_EMAIL`     | Cliente  | No          | Email sugerido/pre-relleno en el formulario de login               |
-| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Cliente | No**       | API key de Google Maps (Maps JavaScript + Directions API)          |
+| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Cliente | No**       | API key de Google Maps (Maps JavaScript API)                      |
+| `GOOGLE_DIRECTIONS_API_KEY`     | Servidor | No***      | Key server-side para la Google **Directions API** (rutas del demo) |
 
 \* Sin estas variables el login usa las credenciales que escribas en el formulario, o **Modo Demo**.
 \** Necesaria para el mapa. Sin ella, el mapa muestra un aviso y la app funciona con el resto de la UI.
+\*** Recomendada para las rutas por calles del Modo Demo (ver más abajo).
 
 ### Google Maps Platform
 
@@ -88,6 +90,21 @@ Copia `.env.example` a `.env.local`. **No subas `.env.local` al repositorio** (e
 
 > `NEXT_PUBLIC_GOOGLE_MAP_ID` (Map ID vectorial) está **obsoleto/retirado** en este proyecto: los
 > estilos del mapa se aplican por JS (`MapOptions.styles`), no por Map ID.
+
+#### Por qué necesitas una segunda key para las rutas (Directions API)
+
+La Google **Directions API** es un *web service* que se consume desde el servidor (nuestro proxy
+`/api/maps/directions`). Una key restringida por **HTTP referrers** solo puede usarse desde el
+navegador (la Maps JS API envía la cabecera `Referer`); al llamarla desde el servidor, sin `Referer`,
+Google responde `REQUEST_DENIED: API keys with referer restrictions cannot be used with this API`.
+
+Sin rutas, los vehículos del Modo Demo usan un bucle circular de respaldo. Para que sigan calles reales:
+
+1. Crea una **segunda API key** en Google Cloud Console.
+2. Restríngea **solo por API** (habilita únicamente *Directions API*) — no uses restricción por referrer.
+   Como es una key server-side (`GOOGLE_DIRECTIONS_API_KEY`, sin prefijo `NEXT_PUBLIC_`), nunca llega
+   al navegador.
+3. Añádela a `.env.local` (y a las variables de entorno de tu plataforma de despliegue).
 
 ---
 
