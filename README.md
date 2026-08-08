@@ -1,6 +1,6 @@
 # Control Room · Monitor de Flota en Tiempo Real
 
-Dashboard de monitorización de vehículos construido como prueba técnica de **Design Engineer (UX/UI)**.
+Dashboard de monitorización de vehículos.
 Consume la API pública de [Traccar](https://www.traccar.org/api-reference/) a través de un proxy
 **server-side** (Next.js Route Handlers) que evita problemas de **CORS**, oculta la sesión del navegador
 y mantiene las credenciales fuera del cliente.
