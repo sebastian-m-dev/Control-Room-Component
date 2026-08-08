@@ -3,7 +3,7 @@
 Dashboard de monitorización de vehículos.
 Consume la API pública de [Traccar](https://www.traccar.org/api-reference/) a través de un proxy
 **server-side** (Next.js Route Handlers) que evita problemas de **CORS**, oculta la sesión del navegador
-y mantiene las credenciales fuera del cliente.
+y mantiene las credenciales fuera del cliente. [Demo](https://control-room-delta-eight.vercel.app/).
 
 El mapa es un canvas **WebGL** (deck.gl) sobre Google Maps con interpolación de posición continua:
 los vehículos nunca se detienen entre polls, giran según su rumbo y trazan su ruta en tiempo real.
