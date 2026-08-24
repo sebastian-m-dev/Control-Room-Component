@@ -1,219 +1,224 @@
-# Control Room · Monitor de Flota en Tiempo Real
+# Control Room · Real-Time Fleet Monitor
 
-Dashboard de monitorización de vehículos.
-Consume la API pública de [Traccar](https://www.traccar.org/api-reference/) a través de un proxy
-**server-side** (Next.js Route Handlers) que evita problemas de **CORS**, oculta la sesión del navegador
-y mantiene las credenciales fuera del cliente. [Demo](https://control-room-delta-eight.vercel.app/).
+Vehicle monitoring dashboard built as a **Design Engineer (UX/UI)** technical test.
+Consumes [Traccar's](https://www.traccar.org/api-reference/) public API through a
+**server-side** proxy (Next.js Route Handlers) that avoids **CORS** issues, hides the session from the browser
+and keeps credentials out of the client. [Demo](https://control-room-delta-eight.vercel.app/).
 
-El mapa es un canvas **WebGL** (deck.gl) sobre Google Maps con interpolación de posición continua:
-los vehículos nunca se detienen entre polls, giran según su rumbo y trazan su ruta en tiempo real.
+The map is a **WebGL** canvas (deck.gl) on top of Google Maps with continuous position interpolation:
+vehicles never stop between polls, turn according to their heading and trace their route in real time.
+
+---
+
+🌐 **Language / Idioma:**
+English (Default) • [Leer esta documentación en Español 🇪🇸](./README.es.md)
 
 ---
 
 ## Stack
 
-| Capa                | Tecnología                                                                   |
-| ------------------- | ---------------------------------------------------------------------------- |
-| Framework           | **Next.js 15** (App Router) + **React 19** + **TypeScript**                  |
-| Rendering 3D/2D     | **deck.gl** (`@deck.gl/google-maps`, `IconLayer`, `PathLayer`) + Google Maps |
-| Data fetching       | **TanStack Query v5** (polling, retry con backoff, cache, estados)           |
-| Estado global       | **Zustand** (tema, mock mode, vehículo seleccionado, tipos de vehículo)      |
-| Estilos             | **Tailwind CSS v3** + **SCSS modular** (design tokens en CSS Custom Properties) |
-| Animación de valores| **Odometer** (odómetro de velocidad / batería / rumbo)                       |
-| Backend (proxy)     | Next.js **Route Handlers** (Node runtime)                                    |
-| Accesibilidad       | **WCAG 2.1 AA** (HTML semántico, ARIA, gestión de foco, `prefers-reduced-motion`) |
+| Layer                | Technology                                                                   |
+| -------------------- | ---------------------------------------------------------------------------- |
+| Framework            | **Next.js 15** (App Router) + **React 19** + **TypeScript**                  |
+| 3D/2D Rendering      | **deck.gl** (`@deck.gl/google-maps`, `IconLayer`, `PathLayer`) + Google Maps |
+| Data fetching        | **TanStack Query v5** (polling, retry with backoff, cache, states)           |
+| Global state         | **Zustand** (theme, mock mode, selected vehicle, vehicle types)              |
+| Styling              | **Tailwind CSS v3** + **modular SCSS** (design tokens as CSS Custom Properties) |
+| Value animation      | **Odometer** (speed / battery / heading odometer)                            |
+| Backend (proxy)      | Next.js **Route Handlers** (Node runtime)                                    |
+| Accessibility        | **WCAG 2.1 AA** (semantic HTML, ARIA, focus management, `prefers-reduced-motion`) |
 
 ---
 
-## Requisitos
+## Requirements
 
-- **Node.js** 18.18+ (recomendado 20+)
+- **Node.js** 18.18+ (20+ recommended)
 - **npm**
-- (Opcional) Cuenta en un servidor Traccar y API key de Google Maps Platform
+- (Optional) An account on a Traccar server and a Google Maps Platform API key
 
 ---
 
-## Puesta en marcha (local)
+## Getting started (local)
 
 ```bash
-# 1. Instalar dependencias
+# 1. Install dependencies
 npm install
 
-# 2. Configurar variables de entorno
+# 2. Set up environment variables
 cp .env.example .env.local
-#   → Rellena solo las que vayas a usar (ver "Variables de entorno")
+#   → Fill in only the ones you will use (see "Environment variables")
 
-# 3. Arrancar el servidor de desarrollo
+# 3. Start the development server
 npm run dev
 ```
 
-Abre **http://localhost:3000**.
+Open **http://localhost:3000**.
 
-> La app arranca en **Modo Demo** con datos simulados aunque no configures nada:
-> tres vehículos circulan por calles reales de Madrid sin necesidad de Traccar ni API key.
+> The app starts in **Demo Mode** with simulated data even if you configure nothing:
+> three vehicles drive around real streets in Madrid without needing Traccar or an API key.
 
-### Ver la app desde el móvil (misma red WiFi)
+### View the app from your phone (same WiFi network)
 
 ```bash
 npm run dev -- -H 0.0.0.0
 ```
 
-Después abre `http://<IP-de-tu-mac>:3000` en el teléfono. Si no carga, revisa el
-**aislamiento de clientes (AP isolation)** del router. Como alternativa, cualquier túnel
-(`localhost.run`, `ngrok`, Cloudflare Tunnel) reenvía `localhost:3000` a una URL pública.
+Then open `http://<your-mac-ip>:3000` on your phone. If it doesn't load, check your router's
+**client isolation (AP isolation)** setting. Alternatively, any tunnel service
+(`localhost.run`, `ngrok`, Cloudflare Tunnel) forwards `localhost:3000` to a public URL.
 
 ---
 
-## Variables de entorno
+## Environment variables
 
-Cambia `.env.example` a `.env.local`. 
+Copy `.env.example` to `.env.local`. **Do not commit `.env.local` to the repository** (it's in `.gitignore`).
 
-| Variable                        | Ámbito   | Obligatoria | Descripción                                                        |
-| ------------------------------- | -------- | ----------- | ------------------------------------------------------------------ |
-| `TRACCAR_BASE_URL`              | Servidor | No*         | Base URL de tu servidor Traccar (p. ej. `https://demo4.traccar.org`) |
-| `TRACCAR_EMAIL`                 | Servidor | No*         | Usuario Traccar para login automático                              |
-| `TRACCAR_PASSWORD`              | Servidor | No*         | Contraseña Traccar para login automático                           |
-| `NEXT_PUBLIC_TRACCAR_EMAIL`     | Cliente  | No          | Email sugerido/pre-relleno en el formulario de login               |
-| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Cliente | No**       | API key de Google Maps (Maps JavaScript API)                      |
-| `GOOGLE_DIRECTIONS_API_KEY`     | Servidor | No***      | Key server-side para la Google **Directions API** (rutas del demo) |
+| Variable                        | Scope    | Required | Description                                                        |
+| ------------------------------- | -------- | -------- | ------------------------------------------------------------------ |
+| `TRACCAR_BASE_URL`              | Server   | No*      | Base URL of your Traccar server (e.g. `https://demo4.traccar.org`) |
+| `TRACCAR_EMAIL`                 | Server   | No*      | Traccar username for automatic login                               |
+| `TRACCAR_PASSWORD`              | Server   | No*      | Traccar password for automatic login                               |
+| `NEXT_PUBLIC_TRACCAR_EMAIL`     | Client   | No       | Suggested/pre-filled email in the login form                       |
+| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Client | No**     | Google Maps API key (Maps JavaScript API)                          |
+| `GOOGLE_DIRECTIONS_API_KEY`     | Server   | No***    | Server-side key for the Google **Directions API** (demo routes)    |
 
-\* Sin estas variables el login usa las credenciales que escribas en el formulario, o **Modo Demo**.
-\** Necesaria para el mapa. Sin ella, el mapa muestra un aviso y la app funciona con el resto de la UI.
-\*** Recomendada para las rutas por calles del Modo Demo (ver más abajo).
+\* Without these variables, login uses whatever credentials you type into the form, or **Demo Mode**.
+\** Needed for the map. Without it, the map shows a notice and the app works with the rest of the UI.
+\*** Recommended for street-level routes in Demo Mode (see below).
 
 ### Google Maps Platform
 
-1. Crea una **API key** en Google Cloud Console → *APIs & Services*.
-2. Habilita **Maps JavaScript API** y **Directions API**.
-3. Restringe la key por **HTTP referrers** (p. ej. `http://localhost:3000`). Es una key pública por
-   diseño (prefijo `NEXT_PUBLIC_`), pero siempre debe ir acotada por referrer y, a ser posible, por API.
+1. Create an **API key** in Google Cloud Console → *APIs & Services*.
+2. Enable **Maps JavaScript API** and **Directions API**.
+3. Restrict the key by **HTTP referrers** (e.g. `http://localhost:3000`). It is a public key by
+   design (`NEXT_PUBLIC_` prefix), but it should always be scoped by referrer and, where possible, by API.
 
-> `NEXT_PUBLIC_GOOGLE_MAP_ID` (Map ID vectorial) está **obsoleto/retirado** en este proyecto: los
-> estilos del mapa se aplican por JS (`MapOptions.styles`), no por Map ID.
+> `NEXT_PUBLIC_GOOGLE_MAP_ID` (vector Map ID) is **deprecated/retired** in this project: map
+> styles are applied via JS (`MapOptions.styles`), not via Map ID.
 
-#### Por qué necesitas una segunda key para las rutas (Directions API)
+#### Why you need a second key for routes (Directions API)
 
-La Google **Directions API** es un *web service* que se consume desde el servidor (el proxy
-`/api/maps/directions`). Una key restringida por **HTTP referrers** solo puede usarse desde el
-navegador (la Maps JS API envía la cabecera `Referer`); al llamarla desde el servidor, sin `Referer`,
-Google responde `REQUEST_DENIED: API keys with referer restrictions cannot be used with this API`.
+The Google **Directions API** is a *web service* consumed from the server (our proxy
+`/api/maps/directions`). A key restricted by **HTTP referrers** can only be used from the
+browser (the Maps JS API sends the `Referer` header); when called from the server, without a `Referer`,
+Google responds `REQUEST_DENIED: API keys with referer restrictions cannot be used with this API`.
 
-Sin rutas, los vehículos del Modo Demo usan un bucle circular de respaldo. Para que sigan calles reales:
+Without routes, Demo Mode vehicles fall back to a circular loop. To make them follow real streets:
 
-1. Crea una **segunda API key** en Google Cloud Console.
-2. Restríngea **solo por API** (habilita únicamente *Directions API*) — no uses restricción por referrer.
-   Como es una key server-side (`GOOGLE_DIRECTIONS_API_KEY`, sin prefijo `NEXT_PUBLIC_`), nunca llega
-   al navegador.
-3. Añádela a `.env.local` (y a las variables de entorno de tu plataforma de despliegue).
+1. Create a **second API key** in Google Cloud Console.
+2. Restrict it **by API only** (enable *Directions API* exclusively) — do not use referrer restrictions.
+   Since it is a server-side key (`GOOGLE_DIRECTIONS_API_KEY`, no `NEXT_PUBLIC_` prefix), it never
+   reaches the browser.
+3. Add it to `.env.local` (and to your hosting platform's environment variables).
 
 ---
 
-## Conexión con Traccar (endpoints)
+## Traccar connection (endpoints)
 
-Toda petición a Traccar pasa por un Route Handler que actúa de proxy. El navegador **nunca** ve las
-credenciales: solo recibe una cookie `traccar_session` **httpOnly** con el `JSESSIONID`.
+Every request to Traccar goes through a Route Handler acting as a proxy. The browser **never** sees the
+credentials: it only receives an **httpOnly** `traccar_session` cookie holding the `JSESSIONID`.
 
-| Ruta                    | Método | Descripción                                                                      |
+| Route                   | Method | Description                                                                      |
 | ----------------------- | ------ | -------------------------------------------------------------------------------- |
-| `/api/traccar/session`  | POST   | Autentica contra `POST /api/session` de Traccar y guarda el `JSESSIONID` en cookie httpOnly |
-| `/api/traccar/session`  | DELETE | Cierra sesión (invalida la cookie local)                                        |
-| `/api/traccar/devices`  | GET    | Reenvía `GET /api/devices` con la sesión guardada                               |
-| `/api/traccar/positions`| GET    | Reenvía `GET /api/positions` con la sesión guardada                             |
-| `/api/maps/directions`  | GET    | Proxy a Google **Directions API** (los web services no envían cabeceras CORS)   |
+| `/api/traccar/session`  | POST   | Authenticates against Traccar's `POST /api/session` and stores the `JSESSIONID` in an httpOnly cookie |
+| `/api/traccar/session`  | DELETE | Signs out (invalidates the local cookie)                                         |
+| `/api/traccar/devices`  | GET    | Forwards `GET /api/devices` with the stored session                              |
+| `/api/traccar/positions`| GET    | Forwards `GET /api/positions` with the stored session                            |
+| `/api/maps/directions`  | GET    | Proxy to the Google **Directions API** (web services don't send CORS headers)    |
 
-**Flujo de login real:**
-1. `POST /api/traccar/session` → Traccar devuelve `JSESSIONID` → se guarda en cookie httpOnly.
-2. `GET /api/traccar/devices` y `GET /api/traccar/positions` reenvían la petición con la cookie.
-3. Si la sesión expira (HTTP 401), la app vuelve automáticamente a la vista de login.
-
----
-
-## Modo Demo
-
-Los servidores públicos de Traccar ya **no incluyen un usuario por defecto** (`admin/admin` fue
-retirado). Para que la app nunca se vea vacía ni rota, existe el **Modo Demo**:
-
-- Se activa desde el botón *"Probar con datos de demostración"* del login, o automáticamente si no
-  hay credenciales de entorno.
-- Tres vehículos simulados (furgón, camión y moto) avanzan por **calles reales de Madrid**: cada uno
-  pide una ruta a la **Directions API** una sola vez y recorre su polyline en ping-pong (ida y vuelta),
-  con velocidad y rumbo coherentes.
-- Si la Directions API no está disponible, se usa un **bucle circular determinístico** como fallback.
-- Interruptor «Modo Demo» en el header para alternar entre simulación y conexión real.
+**Real login flow:**
+1. `POST /api/traccar/session` → Traccar returns a `JSESSIONID` → stored in an httpOnly cookie.
+2. `GET /api/traccar/devices` and `GET /api/traccar/positions` forward requests with the cookie.
+3. If the session expires (HTTP 401), the app automatically returns to the login view.
 
 ---
 
-## Arquitectura y decisiones técnicas
+## Demo Mode
 
-### Capa de datos (TanStack Query)
+Traccar's public servers **no longer include a default user** (`admin/admin` was removed). So the
+app never looks empty or broken, there is a **Demo Mode**:
 
-- **Sesión**: `useTraccarSession` — una sola petición, caché infinita. El login manual (`useTraccarLogin`)
-  actualiza la caché para arrancar devices/positions sin re-render condicional.
-- **Devices**: `useTraccarDevices` — polling 60s (30s en demo), solo tras sesión exitosa.
-- **Fleet/Positions**: `useTraccarFleet` — polling 2.5s real / 1.5s demo; reduce las posiciones a la
-  más reciente por dispositivo.
-
-### Animación del mapa (deck.gl + Google Maps)
-
-- **`useVehicleTrip`** (vista individual): interpola la posición del vehículo entre el fix anterior y el
-  nuevo durante el intervalo del polling con `requestAnimationFrame`. El icono rota suavemente hacia el
-  rumbo real (`bearing`) con `IconLayer.getAngle`. La cámara sigue al foco con un **offset de +100 px
-  en el eje Y**.
-- **`useFleetTrip`** (vista flota): misma mecánica aplicada a todos los vehículos a la vez.
-- **`TripBuilder`** (`trip-builder.ts`): motor de conducción por keyframes (velocidad, giro y bucle).
-- **`mock.ts`**: decodificador de **polyline de Google**, cálculo de distancias (haversine) y rutas demo.
-- Los accesores (`getFrame`, `getPath`, `getFleetFrames`) son **refs estables**: el bucle de render del
-  mapa no se reinicia en cada poll.
-
-### Accesibilidad (WCAG 2.1 AA)
-
-- HTML semántico: `<header>`, `<main>`, `<article>`, `<dl>/<dt>/<dd>`, `<label>`.
-- Formularios con `label` + `htmlFor`, `aria-required`, `aria-invalid` implícito.
-- **Diálogos accesibles**: `AlertLightbox` usa `role="dialog"` + `aria-modal`, mueve el foco al abrir,
-  aplica *focus trap* con Tab y lo restaura al cerrar; se cierra con `Escape`.
-- `role="switch"` + `aria-checked` en toggles; `role="radiogroup"` con navegación por flechas/Home/End.
-- Regiones `aria-live` (estado del vehículo), `aria-busy` en skeletons.
-- Anillos de foco visibles (`:focus-visible`), `sr-only` para anuncios, soporte de `prefers-reduced-motion`.
-- Contraste y espaciado basados en design tokens por tema (Light/Dark).
+- Activated from the *"Try demo data"* button on the login screen, or automatically if there are
+  no environment credentials.
+- Three simulated vehicles (van, truck and motorcycle) drive along **real streets in Madrid**: each one
+  requests a route from the **Directions API** once and travels its polyline ping-pong style (back and forth),
+  with coherent speed and heading.
+- If the Directions API is unavailable, a **deterministic circular loop** is used as fallback.
+- A "Demo Mode" switch in the header toggles between simulation and real connection.
 
 ---
 
-## Estructura del proyecto
+## Architecture & technical decisions
+
+### Data layer (TanStack Query)
+
+- **Session**: `useTraccarSession` — single request, infinite cache. Manual login (`useTraccarLogin`)
+  updates the cache so devices/positions start without conditional re-rendering.
+- **Devices**: `useTraccarDevices` — 60s polling (30s in demo), only after a successful session.
+- **Fleet/Positions**: `useTraccarFleet` — 2.5s polling live / 1.5s demo; reduces positions to the
+  latest one per device.
+
+### Map animation (deck.gl + Google Maps)
+
+- **`useVehicleTrip`** (single view): interpolates the vehicle position between the previous fix and the
+  new one across the polling interval using `requestAnimationFrame`. The icon rotates smoothly toward the
+  real bearing via `IconLayer.getAngle`. The camera follows the focus with a **+100 px offset
+  on the Y axis**.
+- **`useFleetTrip`** (fleet view): same mechanics applied to all vehicles at once.
+- **`TripBuilder`** (`trip-builder.ts`): keyframe driving engine (speed, turning and looping).
+- **`mock.ts`**: Google **polyline** decoder, distance calculation (haversine) and demo routes.
+- Accessors (`getFrame`, `getPath`, `getFleetFrames`) are **stable refs**: the map render loop
+  doesn't restart on every poll.
+
+### Accessibility (WCAG 2.1 AA)
+
+- Semantic HTML: `<header>`, `<main>`, `<article>`, `<dl>/<dt>/<dd>`, `<label>`.
+- Forms with `label` + `htmlFor`, `aria-required`, implicit `aria-invalid`.
+- **Accessible dialogs**: `AlertLightbox` uses `role="dialog"` + `aria-modal`, moves focus on open,
+  applies a *focus trap* with Tab and restores it on close; closes with `Escape`.
+- `role="switch"` + `aria-checked` on toggles; `role="radiogroup"` with arrow/Home/End navigation.
+- `aria-live` regions (vehicle status), `aria-busy` on skeletons.
+- Visible focus rings (`:focus-visible`), `sr-only` for announcements, `prefers-reduced-motion` support.
+- Contrast and spacing based on per-theme design tokens (Light/Dark).
+
+---
+
+## Project structure
 
 ```
 src/
   app/
     layout.tsx              # Root layout (ThemeProvider + React Query + Header)
-    page.tsx                # Renderiza el Dashboard
+    page.tsx                # Renders the Dashboard
     api/
       traccar/
-        session/route.ts    # POST/DELETE auth proxy (cookie httpOnly)
-        devices/route.ts    # GET proxy devices
-        positions/route.ts  # GET proxy positions
+        session/route.ts    # POST/DELETE auth proxy (httpOnly cookie)
+        devices/route.ts    # GET devices proxy
+        positions/route.ts  # GET positions proxy
       maps/
-        directions/route.ts # GET proxy Google Directions API
+        directions/route.ts # GET Google Directions API proxy
   components/
-    Dashboard.tsx           # Orquestación de estados (login / carga / error / app)
-    LoginView.tsx           # Autenticación con foco inicial y toggle de contraseña
+    Dashboard.tsx           # State orchestration (login / loading / error / app)
+    LoginView.tsx           # Authentication with initial focus and password toggle
     Header.tsx              # ThemeToggle + LogoutButton
-    MapView.tsx             # Google Maps + deck.gl overlay, cámara y layers
-    StatusCard.tsx          # Tarjeta de estado en vivo (odómetros + live region)
-    FleetSummary.tsx        # Resumen de flota (vista "todos los vehículos")
-    AlertLightbox.tsx       # Diálogo modal accesible para avisos/errores
-    DeviceSelector.tsx      # Selector de vehículo (vista flota / individual)
-    VehicleKindSelector.tsx # Tipo de icono por vehículo (radiogroup accesible)
-    ErrorState.tsx          # Estados de error empáticos (focus en "Reintentar")
-    LoadingSkeleton.tsx     # Skeletons CLS-free
-    VehicleIcon.tsx         # Avatar -thumb del vehículo en la card
-    Odometer.tsx            # Odómetro animado (velocidad, batería, rumbo)
+    MapView.tsx             # Google Maps + deck.gl overlay, camera and layers
+    StatusCard.tsx          # Live status card (odometers + live region)
+    FleetSummary.tsx        # Fleet summary ("all vehicles" view)
+    AlertLightbox.tsx       # Accessible modal dialog for alerts/errors
+    DeviceSelector.tsx      # Vehicle selector (fleet / single view)
+    VehicleKindSelector.tsx # Per-vehicle icon type (accessible radiogroup)
+    ErrorState.tsx          # Empathetic error states (focus on "Retry")
+    LoadingSkeleton.tsx     # CLS-free skeletons
+    VehicleIcon.tsx         # Vehicle avatar thumb on the card
+    Odometer.tsx            # Animated odometer (speed, battery, heading)
   hooks/                    # useTraccarSession/Devices/Fleet/Position, useVehicleTrip,
                             # useFleetTrip, useTraccarLogin/Logout, useNow
   lib/                      # config.ts, traccar.ts, mock.ts, vehicle.ts,
                             # trip-builder.ts, utils.ts
   providers/                # ReactQueryProvider, ThemeProvider
   store/                    # useAppStore, useThemeStore (Zustand + persist)
-  styles/                   # Design tokens + SCSS modular por componente
-  types/                    # Modelos de la API de Traccar
+  styles/                   # Design tokens + modular SCSS per component
+  types/                    # Traccar API models
 ```
 
 ---
@@ -221,16 +226,16 @@ src/
 ## Scripts
 
 ```bash
-npm run dev          # Servidor de desarrollo (http://localhost:3000)
-npm run build        # Build de producción
-npm start            # Sirve el build de producción
-npm run typecheck    # Compilación TypeScript (tsc --noEmit)
+npm run dev          # Development server (http://localhost:3000)
+npm run build        # Production build
+npm start            # Serve the production build
+npm run typecheck    # TypeScript compilation (tsc --noEmit)
 ```
 
 ---
 
-## Despliegue
+## Deployment
 
-Compatibilidad total con **Vercel / Netlify** (funciones serverless de Node) o cualquier host con
-Node.js. Configura las mismas variables de entorno en la plataforma (las credenciales de Traccar y la
-API key de Google). En producción la cookie de sesión se marca como `Secure`.
+Fully compatible with **Vercel / Netlify** (Node serverless functions) or any Node.js-capable host.
+Set the same environment variables on the platform (Traccar credentials and the Google API key).
+In production the session cookie is marked as `Secure`.
