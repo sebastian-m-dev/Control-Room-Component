@@ -3,7 +3,7 @@
 Dashboard de monitorización de vehículos construido como prueba técnica de **Design Engineer (UX/UI)**.
 Consume la API pública de [Traccar](https://www.traccar.org/api-reference/) a través de un proxy
 **server-side** (Next.js Route Handlers) que evita problemas de **CORS**, oculta la sesión del navegador
-y mantiene las credenciales fuera del cliente.
+y mantiene las credenciales fuera del cliente. [Demo](https://control-room-delta-eight.vercel.app/).
 
 El mapa es un canvas **WebGL** (deck.gl) sobre Google Maps con interpolación de posición continua:
 los vehículos nunca se detienen entre polls, giran según su rumbo y trazan su ruta en tiempo real.
@@ -71,7 +71,7 @@ Después abre `http://<IP-de-tu-mac>:3000` en el teléfono. Si no carga, revisa 
 
 ## Variables de entorno
 
-Copia `.env.example` a `.env.local`. **No subas `.env.local` al repositorio** (está en `.gitignore`).
+Cambia `.env.example` a `.env.local`. 
 
 | Variable                        | Ámbito   | Obligatoria | Descripción                                                        |
 | ------------------------------- | -------- | ----------- | ------------------------------------------------------------------ |
@@ -98,7 +98,7 @@ Copia `.env.example` a `.env.local`. **No subas `.env.local` al repositorio** (e
 
 #### Por qué necesitas una segunda key para las rutas (Directions API)
 
-La Google **Directions API** es un *web service* que se consume desde el servidor (nuestro proxy
+La Google **Directions API** es un *web service* que se consume desde el servidor (el proxy
 `/api/maps/directions`). Una key restringida por **HTTP referrers** solo puede usarse desde el
 navegador (la Maps JS API envía la cabecera `Referer`); al llamarla desde el servidor, sin `Referer`,
 Google responde `REQUEST_DENIED: API keys with referer restrictions cannot be used with this API`.
